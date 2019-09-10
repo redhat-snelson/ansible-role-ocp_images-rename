@@ -1,0 +1,35 @@
+---
+# tasks file for roles/snelson_redhat.ocp_images.rename
+- name: Re-Tag Images
+  command:
+    argv:
+      - podman tag
+      - "{{ src_registry_url }}{{ item }}"
+      - "{{ dest_registry_url }}{{ item }}"
+  delegate_to: localhost
+  changed_when: true
+  with_items:
+    - "{{ docker_image_list_required }}"
+    - "{{ docker_image_list_optional }}"
+    - "{{ docker_image_list_s2i }}"
+  tags:
+    - always
+    - ocp_images
+    - rename_image
+    - tag_image
+
+- name: Remove old Tag
+  command:
+    argv:
+      - podman rmi
+      - "{{ src_registry_url }}{{ item }}"
+  delegate_to: localhost
+  changed_when: true
+  with_items:
+    - "{{ docker_image_list_required }}"
+    - "{{ docker_image_list_optional }}"
+    - "{{ docker_image_list_s2i }}"
+  tags:
+    - never
+    - ocp_images
+    - remove_image
