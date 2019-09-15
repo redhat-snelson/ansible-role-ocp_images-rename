@@ -3,7 +3,8 @@
 - name: Re-Tag Images
   command:
     argv:
-      - podman tag
+      - podman
+      - tag
       - "{{ src_registry_url }}{{ item }}"
       - "{{ dest_registry_url }}{{ item }}"
   delegate_to: localhost
@@ -13,15 +14,33 @@
     - "{{ docker_image_list_optional }}"
     - "{{ docker_image_list_s2i }}"
   tags:
-    - always
     - ocp_images
     - rename_image
+    - tag_image
+
+- name: Re-Tag ose-node to major version
+  command:
+    argv:
+      - podman
+      - tag
+      # - "{{ src_registry_url }}{{ item }}"
+      # - "{{ dest_registry_url }}{{ item | map('regex_replace', '(.*):(.*)', ose_major_version ) }}"
+      - "{{ src_registry_url }}openshift3/ose-node:v3.11.135"
+      - "{{ dest_registry_url }}openshift3/ose-node:v3.11"
+  delegate_to: localhost
+  changed_when: true
+  vars:
+    ose_major_version: v3.11
+  tags:
+    - ocp_images
+    - rename_major_image
     - tag_image
 
 - name: Remove old Tag
   command:
     argv:
-      - podman rmi
+      - podman
+      - rmi
       - "{{ src_registry_url }}{{ item }}"
   delegate_to: localhost
   changed_when: true
