@@ -29,8 +29,6 @@
       - "{{ dest_registry_url }}openshift3/ose-node:v3.11"
   delegate_to: localhost
   changed_when: true
-  vars:
-    ose_major_version: v3.11
   tags:
     - ocp_images
     - rename_major_image
