@@ -41,6 +41,7 @@
       - rmi
       - "{{ src_registry_url }}{{ item }}"
   delegate_to: localhost
+  when: ocp_image_delete == true
   changed_when: true
   with_items:
     - "{{ docker_image_list_required }}"
